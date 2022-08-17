@@ -49,49 +49,73 @@ CREATE TABLE Repair (
     StartDate DATE,
     EndDate DATE,
     RepairID INTEGER PRIMARY KEY,
-    Cost FLOAT
-)
+    Cost FLOAT,
+    ServiceABN BIGINT REFERENCES Service(ABN) NOT NULL,
+    DeviceRepaired BIGINT REFERENCES Device(DeviceID) NOT NULL
+);
 CREATE TABLE Device (
     SerialNumber BIGINT,
     PurchaseDate DATE,
     DeviceID BIGINT PRIMARY KEY,
     PurchaseCost FLOAT,
-    IsInstanceOf BIGINT REFERENCES Model(ModelNumber),
-    UsedBy INTEGER [] REFERENCES Employee(EmpID)
-)
+    IsInstanceOf BIGINT REFERENCES Model(ModelPK) NOT NULL, -- NOT NULL cos its exactly 1
+    -- UsedBy INTEGER [] REFERENCES Employee(EmpID)
+    Employee INTEGER REFERENCES Employee(EmpID) -- device is issued to at most 1 employee
+);
+CREATE TABLE UsedBy ( -- this is what they did in lecture 3
+    DeviceID BIGINT REFERENCES Device(DeviceID),
+    EmpID INTEGER REFERENCES Employee(EmpID),
+    PRIMARY KEY (DeviceID, EmpID)
+);
 CREATE TABLE Phone (
     Plan VARCHAR(30),
     Carrier VARCHAR(30),
     Number BIGINT
-)
+);
 CREATE TABLE Model (
     Weight FLOAT,
-    ModelNumber BIGINT PRIMARY KEY,
-    Manufacturer VARCHAR(30) PRIMARY KEY,
+    ModelNumber BIGINT,
+    Manufacturer VARCHAR(30),
     Description VARCHAR(30), 
-    AllocatedTo VARCHAR(20) [] REFERENCES Department(Name)
-    IsInstanceOf BIGINT [] REFERENCES Device(DeviceID)
-)
+    --AllocatedTo VARCHAR(20) [] REFERENCES Department(Name)
+    --IsInstanceOf BIGINT [] REFERENCES Device(DeviceID), Don't think this is needed cos of foreign key in Device
+    CONSTRAINT ModelPK PRIMARY KEY (ModelNumber, Manufacturer)
+);
+CREATE TABLE AllocatedTo (
+    DepartmentName VARCHAR(20) REFERENCES Department(Name),
+    MaxNumber INTEGER,
+    CONSTRAINT ModelPK FOREIGN KEY (ModelNumber, Manufacturer) REFERENCES Model(ModelPK), -- i think this works
+    PRIMARY KEY (ModelPK, DepartmentName)
+);
 CREATE TABLE Employee (
-    PhoneNumbers BIGINT UNSIGNED [],
+    -- PhoneNumbers BIGINT UNSIGNED [],
     HomeAddress VARCHAR(100),
     Name VARCHAR(30),
     EmpID INTEGER PRIMARY KEY,
     DateOfBirth DATE,
     WorksIn VARCHAR(20) REFERENCES Department(Name) 
-    UsedBy BIGINT [] REFERENCES Device(DeviceID)
-    IssuedTo 
-)
+    -- UsedBy BIGINT [] REFERENCES Device(DeviceID)
+);
+CREATE TABLE PhoneNumbers ( -- how they did multivalue attributes in lecture
+    PhoneNumber BIGINT,
+    Employee INTEGER REFERENCES Employee(EmpID),
+    PRIMARY KEY (PhoneNumber, Employee)
+);
 CREATE TABLE Department (
-    OfficeLocations VARCHAR(20) [],
+    -- OfficeLocations VARCHAR(20) [],
     Budget INTEGER, 
     Name VARCHAR(20) PRIMARY KEY,
-    AllocatedTo BIGINT [] REFERENCES Model(ModelNumber),
+    -- AllocatedTo BIGINT [] REFERENCES Model(ModelNumber),
     WorksIn INTEGER [] REFERENCES Employee(EmpID)
-)
+);
+CREATE TABLE OfficeLocations (
+    Location VARCHAR(20),
+    DepartmentName VARCHAR(20) REFERENCES Department(Name),
+    PRIMARY KEY (Location, DepartmentName)
+);
 CREATE TABLE Service (
     Owed FLOAT REFERENCES Repair(Cost),
     ServiceName VARCHAR(30),
     ABN BIGINT PRIMARY KEY, 
     Email VARCHAR(30)
-)
+);
