@@ -93,6 +93,9 @@ Situations:
 •	A particular repair is not done on any device. PREVENTED
     This is not allowed as the line between the Repair entity type and the DoneTo relationship is thick and has an arrow, meaning a repair can be done to exactly 1 device.
 
+•   There is a device which is not a phone. ALLOWED
+    Looking to the IsA hierarchy, there is no 'total' annotation to suggest that every device (superclass) must be a subclass entity. Hence, this is allowed. 
+
 •	A particular device was issued to three employees. PREVENTED
     This is not allowed. According to the ER diagram a Device entity type can be issued to at most 1 Employee entity type. This is because the line between Device and IssuedTo has an arrow.
 
