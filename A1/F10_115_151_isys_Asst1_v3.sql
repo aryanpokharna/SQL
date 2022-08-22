@@ -29,9 +29,11 @@ CREATE TABLE UsedBy (
     PRIMARY KEY (DeviceID, EmpID)
 );
 CREATE TABLE Phone (
+    DeviceID BIGINT REFERENCES Device(DeviceID),
     Plan VARCHAR(30),
     Carrier VARCHAR(30),
-    Number BIGINT
+    Number BIGINT,
+    PRIMARY KEY (DeviceID)
 );
 CREATE TABLE Model (
     Weight FLOAT,
