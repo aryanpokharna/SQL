@@ -5,12 +5,6 @@ ISYS2120 Assignment 1
 • Negeen Daudi - 500508121
 */
 
-/*
-select count(*)
-from Film
-where length > 180
-*/
-
 CREATE TABLE Service (
     Owed FLOAT,
     ServiceName VARCHAR(30),
@@ -40,10 +34,10 @@ CREATE TABLE Device (
     PurchaseDate DATE,
     DeviceID BIGINT PRIMARY KEY,
     PurchaseCost FLOAT,
-    ModelNumber BIGINT REFERENCES Model(ModelNumber) NOT NULL, 
-    Manufacturer VARCHAR(30) REFERENCES Model(Manufacturer) NOT NULL,
-    --Model REFERENCES Model(ModelPK),
     Employee INTEGER REFERENCES Employee(EmpID),
+    ModelNumber BIGINT, 
+    Manufacturer VARCHAR(30),
+    FOREIGN KEY (ModelNumber, Manufacturer) REFERENCES Model(ModelNumber, Manufacturer)
 );
 CREATE TABLE Repair (
     FaultReport VARCHAR(800),
@@ -68,13 +62,13 @@ CREATE TABLE Phone (
 );
 CREATE TABLE AllocatedTo (
     DepartmentName VARCHAR(20) REFERENCES Department(Name),
-    MaxNumber INTEGER
-    --CONSTRAINT Model FOREIGN KEY (ModelNumber, Manufacturer) REFERENCES Model(ModelPK), 
-    --ModelNumber BIGINT REFERENCES Model(ModelNumber),
-    --Manufacturer VARCHAR(30) REFERENCES Model(Manufacturer),
-    --PRIMARY KEY (ModelNumber, Manufacturer, DepartmentName)
+    MaxNumber INTEGER,
+    ModelNumber BIGINT,
+    Manufacturer VARCHAR(30),
+    FOREIGN KEY (ModelNumber, Manufacturer) REFERENCES Model(ModelNumber, Manufacturer),
+    PRIMARY KEY (ModelNumber, Manufacturer, DepartmentName)
 );
-CREATE TABLE PhoneNumbers ( -- how they did multivalue attributes in lecture
+CREATE TABLE PhoneNumbers ( 
     PhoneNumber BIGINT,
     Employee INTEGER REFERENCES Employee(EmpID),
     PRIMARY KEY (PhoneNumber, Employee)
@@ -84,9 +78,6 @@ CREATE TABLE OfficeLocations (
     DepartmentName VARCHAR(20) REFERENCES Department(Name),
     PRIMARY KEY (Location, DepartmentName)
 );
-
-
-
 
 /*
 Situations:
