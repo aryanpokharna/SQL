@@ -1,27 +1,58 @@
 /* 
 ISYS2120 Assignment 1
 
-• Aryan Pokharna - SID
+• Aryan Pokharna - 500503791
 • Negeen Daudi - 500508121
 */
 
-CREATE TABLE Repair (
-    FaultReport VARCHAR(800)
-    StartDate DATE,
-    EndDate DATE,
-    RepairID INTEGER PRIMARY KEY,
-    Cost FLOAT,
-    ServiceABN BIGINT REFERENCES Service(ABN) NOT NULL,
-    DeviceRepaired BIGINT REFERENCES Device(DeviceID) NOT NULL
+/*
+select count(*)
+from Film
+where length > 180
+*/
+
+CREATE TABLE Service (
+    Owed FLOAT,
+    ServiceName VARCHAR(30),
+    ABN BIGINT PRIMARY KEY, 
+    Email VARCHAR(30)
+);
+CREATE TABLE Model (
+    Weight FLOAT,
+    ModelNumber BIGINT,
+    Manufacturer VARCHAR(30),
+    Description VARCHAR(30), 
+    PRIMARY KEY (ModelNumber, Manufacturer)
+);
+CREATE TABLE Department (
+    Budget INTEGER, 
+    Name VARCHAR(20) PRIMARY KEY
+);
+CREATE TABLE Employee (
+    HomeAddress VARCHAR(100),
+    Name VARCHAR(30),
+    EmpID INTEGER PRIMARY KEY,
+    DateOfBirth DATE,
+    Department VARCHAR(20) REFERENCES Department(Name) 
 );
 CREATE TABLE Device (
     SerialNumber BIGINT,
     PurchaseDate DATE,
     DeviceID BIGINT PRIMARY KEY,
     PurchaseCost FLOAT,
-    ModelNumber BIGINT REFERENCES Model(ModelNumber) NOT NULL, -- NOT NULL cos its exactly 1
-    Manufacturer VARCHAR(30) REFERENCES Model(Manufacturer) NOT NULL, 
-    Employee INTEGER REFERENCES Employee(EmpID) 
+    ModelNumber BIGINT REFERENCES Model(ModelNumber) NOT NULL, 
+    Manufacturer VARCHAR(30) REFERENCES Model(Manufacturer) NOT NULL,
+    --Model REFERENCES Model(ModelPK),
+    Employee INTEGER REFERENCES Employee(EmpID),
+);
+CREATE TABLE Repair (
+    FaultReport VARCHAR(800),
+    StartDate DATE,
+    EndDate DATE,
+    RepairID INTEGER PRIMARY KEY,
+    Cost FLOAT,
+    ServiceABN BIGINT REFERENCES Service(ABN) NOT NULL,
+    DeviceRepaired BIGINT REFERENCES Device(DeviceID) NOT NULL
 );
 CREATE TABLE UsedBy ( 
     DeviceID BIGINT REFERENCES Device(DeviceID),
@@ -35,49 +66,26 @@ CREATE TABLE Phone (
     Number BIGINT,
     PRIMARY KEY (DeviceID)
 );
-CREATE TABLE Model (
-    Weight FLOAT,
-    ModelNumber BIGINT,
-    Manufacturer VARCHAR(30),
-    Description VARCHAR(30), 
-    PRIMARY KEY (ModelNumber, Manufacturer)
-);
 CREATE TABLE AllocatedTo (
     DepartmentName VARCHAR(20) REFERENCES Department(Name),
-    MaxNumber INTEGER,
-    --CONSTRAINT Model FOREIGN KEY (ModelNumber, Manufacturer) REFERENCES Model(ModelPK), -- i think this works
-    ModelNumber BIGINT REFERENCES Model(ModelNumber),
-    Manufacturer VARCHAR(30) REFERENCES Model(Manufacturer),
-    PRIMARY KEY (ModelNumber, Manufacturer, DepartmentName)
-);
-CREATE TABLE Employee (
-    HomeAddress VARCHAR(100),
-    Name VARCHAR(30),
-    EmpID INTEGER PRIMARY KEY,
-    DateOfBirth DATE,
-    Department VARCHAR(20) REFERENCES Department(Name) 
+    MaxNumber INTEGER
+    --CONSTRAINT Model FOREIGN KEY (ModelNumber, Manufacturer) REFERENCES Model(ModelPK), 
+    --ModelNumber BIGINT REFERENCES Model(ModelNumber),
+    --Manufacturer VARCHAR(30) REFERENCES Model(Manufacturer),
+    --PRIMARY KEY (ModelNumber, Manufacturer, DepartmentName)
 );
 CREATE TABLE PhoneNumbers ( -- how they did multivalue attributes in lecture
     PhoneNumber BIGINT,
     Employee INTEGER REFERENCES Employee(EmpID),
     PRIMARY KEY (PhoneNumber, Employee)
 );
-CREATE TABLE Department (
-    Budget INTEGER, 
-    Name VARCHAR(20) PRIMARY KEY,
-    WorksIn INTEGER [] REFERENCES Employee(EmpID)
-);
 CREATE TABLE OfficeLocations (
     Location VARCHAR(20),
     DepartmentName VARCHAR(20) REFERENCES Department(Name),
     PRIMARY KEY (Location, DepartmentName)
 );
-CREATE TABLE Service (
-    Owed FLOAT REFERENCES Repair(Cost),
-    ServiceName VARCHAR(30),
-    ABN BIGINT PRIMARY KEY, 
-    Email VARCHAR(30)
-);
+
+
 
 
 /*
