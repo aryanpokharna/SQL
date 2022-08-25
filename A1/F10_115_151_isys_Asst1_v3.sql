@@ -29,15 +29,21 @@ CREATE TABLE Employee (
     DateOfBirth DATE,
     Department VARCHAR(20) REFERENCES Department(Name) 
 );
+CREATE TABLE WorksIn (
+    Department VARCHAR(20) REFERENCES Department(Name),
+    Employee INTEGER REFERENCES Employee(EmpID),
+    Fraction FLOAT,
+    PRIMARY KEY (Department, Employee)
+);
 CREATE TABLE Device (
     SerialNumber BIGINT,
     PurchaseDate DATE,
     DeviceID BIGINT PRIMARY KEY,
     PurchaseCost FLOAT,
-    Employee INTEGER REFERENCES Employee(EmpID),
+    Employee INTEGER REFERENCES Employee(EmpID), -- Employee the device is issued to (IssuedTo)
     ModelNumber BIGINT, 
     Manufacturer VARCHAR(30),
-    FOREIGN KEY (ModelNumber, Manufacturer) REFERENCES Model(ModelNumber, Manufacturer)
+    FOREIGN KEY (ModelNumber, Manufacturer) REFERENCES Model(ModelNumber, Manufacturer) -- Model of Device (IsInstanceOf)
 );
 CREATE TABLE Repair (
     FaultReport VARCHAR(800),
@@ -45,8 +51,8 @@ CREATE TABLE Repair (
     EndDate DATE,
     RepairID INTEGER PRIMARY KEY,
     Cost FLOAT,
-    ServiceABN BIGINT REFERENCES Service(ABN) NOT NULL,
-    DeviceRepaired BIGINT REFERENCES Device(DeviceID) NOT NULL
+    ServiceABN BIGINT REFERENCES Service(ABN) NOT NULL, -- Service which did the repair (DoneBy)
+    DeviceRepaired BIGINT REFERENCES Device(DeviceID) NOT NULL -- Device which was repaired (DoneTo)
 );
 CREATE TABLE UsedBy ( 
     DeviceID BIGINT REFERENCES Device(DeviceID),
